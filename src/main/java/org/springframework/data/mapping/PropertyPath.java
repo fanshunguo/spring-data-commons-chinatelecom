@@ -266,13 +266,17 @@ public class PropertyPath implements Streamable<PropertyPath> {
 
 		return CACHE.computeIfAbsent(Key.of(type, source), it -> {
 
+			String mark = "@";
+			String escape = "_";
+			String tmpPath = it.path.replaceAll(escape, mark);
+
 			List<String> iteratorSource = new ArrayList<>();
 
-			Matcher matcher = isQuoted(it.path) ? SPLITTER_FOR_QUOTED.matcher(it.path.replace("\\Q", "").replace("\\E", ""))
-					: SPLITTER.matcher("_" + it.path);
+			Matcher matcher = isQuoted(tmpPath) ? SPLITTER_FOR_QUOTED.matcher(tmpPath.replace("\\Q", "").replace("\\E", ""))
+					: SPLITTER.matcher("_" + tmpPath);
 
 			while (matcher.find()) {
-				iteratorSource.add(matcher.group(1));
+				iteratorSource.add(matcher.group(1).replaceAll(mark, "_"));
 			}
 
 			Iterator<String> parts = iteratorSource.iterator();
